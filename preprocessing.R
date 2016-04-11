@@ -1,6 +1,8 @@
 library(readr)
 library(plyr)
-url = 'URL FOR CSV EXPORT GOES HERE'
+library(Rmisc)
+library(ggplot2)
+#url = 'URL FOR CSV EXPORT GOES HERE'
 df = read_csv(url)
 
 df = plyr::rename(df, c(
@@ -52,4 +54,11 @@ df = plyr::rename(df, c(
   "Please tell us why you would no longer be interested in helping to test Firefox" = 'future_attrition'
 ))
 
-# XXX TODO: recode the data types to numerics or factors instead of strings (or useless factors)
+# check types (paste to excel)
+#write.table(lapply(df, class), 'clipboard', sep="\t")
+
+# recode selected character variables to factor
+for(i in c(21, 23, 26:30, 33:35, 38:49, 52:54, 56:58)) {
+  df[,i] <- factor(df[,i])
+}
+#summary(df)
