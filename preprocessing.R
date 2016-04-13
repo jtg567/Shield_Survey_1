@@ -1,3 +1,5 @@
+rm(list=ls()) #clear the variable workspace
+
 library(readr)
 library(plyr)
 library(Rmisc)
