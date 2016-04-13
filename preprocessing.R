@@ -4,6 +4,16 @@ library(readr)
 library(plyr)
 library(Rmisc)
 library(ggplot2)
+library(lubridate)
+library(scales)
+
+# Treatment levels
+# Client-seconds of wait time for nglayout to render
+# 50 (aggressive)
+# 250 (medium)
+# 500 (ut)
+# 1000 (weak)
+
 #url = 'URL FOR CSV EXPORT GOES HERE'
 df = read_csv(url)
 
@@ -63,4 +73,88 @@ df = plyr::rename(df, c(
 for(i in c(21, 23, 26:30, 33:35, 38:49, 52:54, 56:58)) {
   df[,i] <- factor(df[,i])
 }
-#summary(df)
+
+df$treatment = relevel(df$treatment, ref='ut')
+df$treatment = plyr::mapvalues(df$treatment, from = c('ut','aggressive','medium','weak'), to = c('Control (250)', 'Aggressive (50)', 'Medium (500)', 'Weak (1000)'))
+df = subset(df, treatment != '')
+
+# some descriptives
+
+# response sums by day of week
+df$date = lubridate::ymd_hms(df$date)
+df$wday = lubridate::wday(df$date, label=TRUE, abbr=TRUE)
+df$day = lubridate::floor_date(df$date, 'day')
+qplot(data=df, x=as.Date(day), geom="density", facets=~treatment) + theme_bw() + scale_x_date(date_breaks='1 day', date_labels='%b %d') + coord_flip()
+
+#filter out from invalid dates
+df = df[df$day %within% lubridate::interval(lubridate::mdy('04042016'), lubridate::mdy('04112016')),]
+
+# let's look at simple differences in responses by treatment
+
+# preferences
+# XXX todo
+
+# get sd of proportions of responses to each
+get_results = function(df, response) {
+  data = ddply(df, .(treatment), function(x) {
+    props = prop.table(table(x[,response]))
+    n = length(x$treatment)
+    se = apply(props, 1, function(p) {sqrt(p*(1-p)/n)} )
+    CI_95 = qnorm(.975)*se
+    names(se) = names(props)
+    return(data.frame(props, n, se, CI_95))})
+  data$variable = relevel(startuptimes$Var1, ref="I don't know/Unsure")
+  return(data)
+}
+
+plot_results = function(results) {
+  ggplot(results, aes(x=treatment, y=Freq)) +
+    geom_bar(stat='identity') + 
+    geom_errorbar(aes(ymax=Freq+CI_95, ymin=Freq-CI_95)) +
+    facet_wrap(~variable, ncol=1) +
+    coord_flip() +
+    theme_bw()
+}
+
+#exp_* variables
+result = get_results(df, 'exp_startuptime') #interesting
+plot_results(result)
+result = get_results(df, 'exp_scrolling')
+plot_results(result)
+result = get_results(df, 'exp_crashing')
+plot_results(result)
+result = get_results(df, 'exp_pageload') # close to interesting
+plot_results(result)
+result = get_results(df, 'exp_newtabspeed') # interesting
+plot_results(result)
+
+# 100pt scale checks
+# XXX we probably need to categorize this variable and look at proportional responses
+
+# Graph of group mean differences
+result = Rmisc::summarySE(data=df, measurevar='lastweek_speed_rating', groupvars=c('treatment'), na.rm=T, conf.interval = 0.95)
+ggplot(result, aes(x=treatment, y=lastweek_speed_rating)) + 
+#  geom_bar(stat="identity") + 
+  geom_pointrange(aes(ymin=lastweek_speed_rating-ci, ymax=lastweek_speed_rating+ci)) +
+  theme_bw() +
+  scale_y_continuous(limits = c(50, 80)) +
+  xlab('Treatment conditions') +
+  ylab('Reported "fastness" of browser on 100pt scale (higher is better)') +
+  coord_flip()
+
+# simple model fits
+
+#fit = lm(data=df, lastweek_speed_rating ~ treatment + log(kbps))
+fit = lm(data=df, lastweek_speed_rating ~ treatment)
+summary(fit) # nothing is significant against control...might want to try against another level
+# p values are not great, r^2 is hilariously small
+
+# looking at average differences between treatments and 
+# differences between one browser and firefox
+df$diff = df$speed_rating - df$lastweek_speed_rating
+ddply(df, .(treatment), summarise, 
+      mean=mean(diff, na.rm=T), 
+      sd=sd(diff, na.rm=T), 
+      n=sum(!is.na(diff)))
+# huge sd, really small n
+
