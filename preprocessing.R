@@ -135,12 +135,12 @@ plot_results(result)
 result = Rmisc::summarySE(data=df, measurevar='lastweek_speed_rating', groupvars=c('treatment'), na.rm=T, conf.interval = 0.95)
 ggplot(result, aes(x=treatment, y=lastweek_speed_rating)) + 
 #  geom_bar(stat="identity") + 
-geom_pointrange(aes(ymin=lastweek_speed_rating-ci, ymax=lastweek_speed_rating+ci)) +
-theme_bw() +
-scale_y_continuous(limits = c(50, 80)) +
-xlab('Treatment conditions') +
-ylab('Reported "fastness" of browser on 100pt scale (higher is better)') +
-coord_flip()
+  geom_pointrange(aes(ymin=lastweek_speed_rating-ci, ymax=lastweek_speed_rating+ci)) +
+  theme_bw() +
+  scale_y_continuous(limits = c(50, 80)) +
+  xlab('Treatment conditions') +
+  ylab('Reported "fastness" of browser on 100pt scale (higher is better)') +
+  coord_flip()
 
 # simple model fits
 
