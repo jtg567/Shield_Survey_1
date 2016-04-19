@@ -7,13 +7,6 @@ library(ggplot2)
 library(lubridate)
 library(scales)
 
-# Treatment levels
-# Client-seconds of wait time for nglayout to render
-# 50 (aggressive)
-# 250 (medium)
-# 500 (ut)
-# 1000 (weak)
-
 #url = 'URL FOR CSV EXPORT GOES HERE'
 df = read_csv(url)
 
@@ -155,18 +148,14 @@ for(i in c(21, 23, 26:30, 33:35, 43, 45:49, 56, 58)) {
 for(i in c(38:42, 44, 52:54, 57)) {
   df[,i] <- as.numeric(df[,i])
 }
-
 #summary(df)
+
+# Treatment levels
+# Client-seconds of wait time for nglayout to render
+# 50 (aggressive)
+# 250 (medium)
+# 500 (ut)
+# 1000 (weak)
 df$treatment = relevel(df$treatment, ref='ut')
 df$treatment = plyr::mapvalues(df$treatment, from = c('ut','aggressive','medium','weak'), to = c('Control (250)', 'Aggressive (50)', 'Medium (500)', 'Weak (1000)'))
 df = subset(df, treatment != '')
-
-# response sums by day of week
-df$date = lubridate::ymd_hms(df$date)
-df$wday = lubridate::wday(df$date, label=TRUE, abbr=TRUE)
-df$day = lubridate::floor_date(df$date, 'day')
-qplot(data=df, x=as.Date(day), geom="density", facets=~treatment) + theme_bw() + scale_x_date(date_breaks='1 day', date_labels='%b %d') + coord_flip()
-
-# PARAMETERIZE DATE INPUTS HERE
-#filter out from invalid dates
-df = df[df$day %within% lubridate::interval(lubridate::mdy('04042016'), lubridate::mdy('04112016')),]

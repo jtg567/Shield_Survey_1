@@ -1,4 +1,12 @@
-# basic descriptives (not crucially study-relevant)
+# response sums by day of week
+df$date = lubridate::ymd_hms(df$date)
+df$wday = lubridate::wday(df$date, label=TRUE, abbr=TRUE)
+df$day = lubridate::floor_date(df$date, 'day')
+qplot(data=df, x=as.Date(day), geom="density", facets=~treatment) + theme_bw() + scale_x_date(date_breaks='1 day', date_labels='%b %d') + coord_flip()
+
+# PARAMETERIZE DATE INPUTS HERE
+#filter out from invalid dates
+df = df[df$day %within% lubridate::interval(lubridate::mdy('04042016'), lubridate::mdy('04112016')),]
 
 # how many users completed the study
 N.total <- nrow(df); cat(N.total,"users completed the study")
@@ -13,6 +21,7 @@ sapply(df[df$`URL Variable: reason`=='user-ended-study',26:30], function(x) {sum
 cat("Respondents came from a total of",length(unique(df$country)),"countries. Following are tables of counts and proportions by country:")
 sort(table(df$country), decreasing=T)
 sort(table(df$country)/N.total, decreasing=T)
+# did the write.table(x, 'clipboard') trick to get into excel and make pretty
 
 # predominantly US, what's the breakdown by state? (one is blank? looks like WY, )
 cat("US respondents came from a total of",length(unique(df[df$country=='United States',]$state)),"states. Following are tables of counts and proportions by US state:")
