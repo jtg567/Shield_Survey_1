@@ -152,10 +152,11 @@ for(i in c(38:42, 44, 52:54, 57)) {
 
 # Treatment levels
 # Client-seconds of wait time for nglayout to render
-# 50 (aggressive)
-# 250 (medium)
-# 500 (ut)
+# https://github.com/gregglind/shield-variations-gestalt/blob/master/x-addon/src/variations.js#L6
+# 5 (aggressive)
+# 50 (medium)
+# 250 (ut/control/default)
 # 1000 (weak)
 df$treatment = relevel(df$treatment, ref='ut')
-df$treatment = plyr::mapvalues(df$treatment, from = c('ut','aggressive','medium','weak'), to = c('Control (250)', 'Aggressive (50)', 'Medium (500)', 'Weak (1000)'))
+df$treatment = plyr::mapvalues(df$treatment, from = c('ut','aggressive','medium','weak'), to = c('Control (250)', 'Aggressive (5)', 'Medium (50)', 'Weak (1000)'))
 df = subset(df, treatment != '')

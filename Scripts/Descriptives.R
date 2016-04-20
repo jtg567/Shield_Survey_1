@@ -81,11 +81,11 @@ plot_results = function(results, title) {
 #exp_* variables
 result = get_results(df, 'exp_startuptime') #interesting
 plot_results(result, 'exp_startuptime')
-result = get_results(df, 'exp_scrolling')
+#result = get_results(df, 'exp_scrolling')
 #plot_results(result, 'exp_scrolling')
-result = get_results(df, 'exp_crashing')
-plot_results(result, 'exp_crashing')
-result = get_results(df, 'exp_pageload') # close to interesting
+#result = get_results(df, 'exp_crashing')
+#plot_results(result, 'exp_crashing')
+#result = get_results(df, 'exp_pageload') # close to interesting
 #plot_results(result, 'exp_pageload')
 result = get_results(df, 'exp_newtabspeed') # interesting
 plot_results(result, 'exp_newtabspeed')
