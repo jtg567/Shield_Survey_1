@@ -22,7 +22,7 @@ df = plyr::rename(df, c(
   #"URL Variable: reason",
   #"URL Variable: test",
   "URL Variable: variation" = 'treatment',
-  #"URL Variable: who"
+  "URL Variable: who" = 'clientId',
   #"URL Variable: xname"
   "I don't want to share my data:Please tell us why you chose to opt out of the study. Check all that apply." = 'optoutwhy_sharedata',
   "Firefox became slow:Please tell us why you chose to opt out of the study. Check all that apply." = 'optoutwhy_becameslow',
