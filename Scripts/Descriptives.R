@@ -90,6 +90,19 @@ plot_results(result, 'exp_startuptime')
 result = get_results(df, 'exp_newtabspeed') # interesting
 plot_results(result, 'exp_newtabspeed')
 
+
+# added these 4/26 following mgrimes question on perf survey 1
+result = get_results(df, 'overall_quality')
+plot_results(result, 'overall_quality')
+
+response_labeller <- function(variable,value){
+  return(list('-2'="Is Very Unlikely", '-1'="Is Unlikely", '0'="Is Same", '1'="Is Likely", '2'="Is Very Likely")[value])
+}
+
+result = get_results(df, 'future_participation')
+plot_results(result, 'future_participation')
+
+
 # 100pt scale checks
 # XXX we probably need to categorize this variable and look at proportional responses
 
