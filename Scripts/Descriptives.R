@@ -1,3 +1,7 @@
+# 2nd iteration - drop the WEAK responders from first run
+df <- df[df$treatment != 'Weak (1000)',]
+
+
 # response sums by day of week
 df$date = lubridate::ymd_hms(df$date)
 df$wday = lubridate::wday(df$date, label=TRUE, abbr=TRUE)
@@ -6,7 +10,7 @@ qplot(data=df, x=as.Date(day), geom="density", facets=~treatment) + theme_bw() +
 
 # PARAMETERIZE DATE INPUTS HERE
 #filter out from invalid dates
-df = df[df$day %within% lubridate::interval(lubridate::mdy('04042016'), lubridate::mdy('04112016')),]
+df = df[df$day %within% lubridate::interval(lubridate::mdy('04042016'), lubridate::mdy('05042016')),]
 
 # how many users completed the study
 N.total <- nrow(df); cat(N.total,"users completed the study")
@@ -56,9 +60,9 @@ get_results = function(df, response) {
     props = prop.table(table(x[,response]))
     n = length(x$treatment)
     se = apply(props, 1, function(p) {sqrt(p*(1-p)/n)} )
-    CI_95 = qnorm(.95)*se
+    CI = qnorm(.90)*se
     names(se) = names(props)
-    return(data.frame(props, n, se, CI_95))})
+    return(data.frame(props, n, se, CI))})
 #  data$variable = relevel(data$Var1, ref=NA)
   return(data)
 }
@@ -71,7 +75,7 @@ response_labeller <- function(variable,value){
 plot_results = function(results, title) {
   ggplot(results, aes(x=treatment, y=Freq)) +
     geom_bar(stat='identity') + 
-    geom_errorbar(aes(ymax=Freq+CI_95, ymin=Freq-CI_95)) +
+    geom_errorbar(aes(ymax=Freq+CI, ymin=Freq-CI)) +
     facet_wrap(~Var1, ncol=1, labeller=response_labeller) +
     coord_flip() +
     theme_bw() +
@@ -81,12 +85,12 @@ plot_results = function(results, title) {
 #exp_* variables
 result = get_results(df, 'exp_startuptime') #interesting
 plot_results(result, 'exp_startuptime')
-#result = get_results(df, 'exp_scrolling')
-#plot_results(result, 'exp_scrolling')
-#result = get_results(df, 'exp_crashing')
-#plot_results(result, 'exp_crashing')
-#result = get_results(df, 'exp_pageload') # close to interesting
-#plot_results(result, 'exp_pageload')
+result = get_results(df, 'exp_scrolling')
+plot_results(result, 'exp_scrolling')
+result = get_results(df, 'exp_crashing')
+plot_results(result, 'exp_crashing')
+result = get_results(df, 'exp_pageload') # close to interesting
+plot_results(result, 'exp_pageload')
 result = get_results(df, 'exp_newtabspeed') # interesting
 plot_results(result, 'exp_newtabspeed')
 
