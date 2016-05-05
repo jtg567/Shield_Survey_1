@@ -158,5 +158,5 @@ for(i in c(38:42, 44, 52:54, 57)) {
 # 250 (ut/control/default)
 # 1000 (weak)
 df$treatment = relevel(df$treatment, ref='ut')
-df$treatment = plyr::mapvalues(df$treatment, from = c('ut','aggressive','medium','weak'), to = c('Control (250)', 'Aggressive (5)', 'Medium (50)', 'Weak (1000)'))
+df$treatment = plyr::mapvalues(df$treatment, from = c('','aggressive','medium','ut','weak'), to = c('','Aggressive (5)', 'Medium (50)', 'Control (250)', 'Weak (1000)'))
 df = subset(df, treatment != '')

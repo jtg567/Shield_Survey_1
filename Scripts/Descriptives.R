@@ -1,7 +1,6 @@
 # 2nd iteration - drop the WEAK responders from first run
 df <- df[df$treatment != 'Weak (1000)',]
 
-
 # response sums by day of week
 df$date = lubridate::ymd_hms(df$date)
 df$wday = lubridate::wday(df$date, label=TRUE, abbr=TRUE)
@@ -77,6 +76,7 @@ plot_results = function(results, title) {
     geom_bar(stat='identity') + 
     geom_errorbar(aes(ymax=Freq+CI, ymin=Freq-CI)) +
     facet_wrap(~Var1, ncol=1, labeller=response_labeller) +
+    scale_x_discrete(limits=c('Aggressive (5)','Medium (50)','Control (250)')) +
     coord_flip() +
     theme_bw() +
     ggtitle(title)
@@ -85,12 +85,12 @@ plot_results = function(results, title) {
 #exp_* variables
 result = get_results(df, 'exp_startuptime') #interesting
 plot_results(result, 'exp_startuptime')
-result = get_results(df, 'exp_scrolling')
-plot_results(result, 'exp_scrolling')
+#result = get_results(df, 'exp_scrolling')
+#plot_results(result, 'exp_scrolling')
 result = get_results(df, 'exp_crashing')
 plot_results(result, 'exp_crashing')
-result = get_results(df, 'exp_pageload') # close to interesting
-plot_results(result, 'exp_pageload')
+#result = get_results(df, 'exp_pageload') # close to interesting
+#plot_results(result, 'exp_pageload')
 result = get_results(df, 'exp_newtabspeed') # interesting
 plot_results(result, 'exp_newtabspeed')
 
@@ -118,8 +118,8 @@ ggplot(result, aes(x=treatment, y=lastweek_speed_rating)) +
   theme_bw() +
   scale_y_continuous(limits = c(50, 80)) +
   xlab('Treatment conditions') +
+  scale_x_discrete(limits=c('Aggressive (5)','Medium (50)','Control (250)')) +
   ylab('Reported "fastness" of browser on 100pt scale (higher is better)') +
   coord_flip()
-
 
 
